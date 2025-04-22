@@ -194,15 +194,36 @@
       selectedBlock = null;
     }
 
-    function unclaimBlock() {
-      if (!selectedBlock) return;
-      const id = selectedBlock.dataset.id;
-      delete claimed[id];
-      localStorage.setItem('claimedBlocks', JSON.stringify(claimed));
-      selectedBlock.classList.remove('claimed');
-      delete selectedBlock.dataset.claimer;
-      closeForm();
-    }
+ function unclaimBlock() {
+  if (!selectedBlock) return;
+  const id = selectedBlock.dataset.id;
+  if (!claimed[id]) return;
+
+  const confirmUnclaim = confirm(`Are you sure you want to unclaim ${id}?`);
+  if (!confirmUnclaim) return;
+
+  const unclaimedData = {
+    name: claimed[id].name,
+    email: claimed[id].email,
+    blockId: id,
+    status: 'unclaimed'
+  };
+
+  // Update visual and local data
+  delete claimed[id];
+  localStorage.setItem('claimedBlocks', JSON.stringify(claimed));
+  selectedBlock.classList.remove('claimed');
+  delete selectedBlock.dataset.claimer;
+  closeForm();
+
+  // Send to Google Apps Script
+  fetch('https://script.google.com/macros/s/AKfycbxosLf3fOqvNeBCLebLQMH_fO8vnHn-HFvhPxC3nJ0DgsQ_bSP2DsozEMHFLhCsEZbM2Q/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(unclaimedData)
+  });
+}
 
     claimForm.addEventListener('submit', (e) => {
       e.preventDefault();
