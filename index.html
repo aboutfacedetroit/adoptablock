@@ -43,29 +43,20 @@
       border-top: 4px dashed #fff;
       transform: translateY(-50%);
     }
-    .block .claimer {
+    .block[data-claimer]:hover::after {
+      content: attr(data-claimer);
       position: absolute;
-      bottom: -18px;
-      left: 0;
-      right: 0;
-      font-size: 10px;
-      color: #222;
-      background-color: #fff5;
+      bottom: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      background: #fff7c0;
+      padding: 2px 6px;
+      border: 1px solid #aaa;
+      border-radius: 3px;
+      white-space: nowrap;
+      z-index: 9999;
     }
-    .block:hover::after {
-  content: attr(data-claimer);
-  position: absolute;
-  bottom: -22px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 11px;
-  background: #fff7c0;
-  padding: 2px 6px;
-  border: 1px solid #aaa;
-  border-radius: 3px;
-  white-space: nowrap;
-  z-index: 9999;
-}
     .label-row {
       font-size: 12px;
       font-weight: bold;
@@ -98,6 +89,15 @@
       z-index: 1000;
       max-width: 90vw;
     }
+    #formModal button.close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+    }
     #overlay {
       display: none;
       position: fixed;
@@ -116,6 +116,7 @@
 
   <div id="overlay"></div>
   <div id="formModal">
+    <button class="close-btn" onclick="closeForm()">&times;</button>
     <h3>Claim Block <span id="blockId"></span></h3>
     <form id="claimForm">
       <input type="text" id="name" placeholder="Your name" required><br><br>
@@ -141,7 +142,7 @@
     const overlay = document.getElementById('overlay');
     const claimForm = document.getElementById('claimForm');
     let selectedBlock = null;
-    const claimed = {};
+    const claimed = JSON.parse(localStorage.getItem('claimedBlocks') || '{}');
 
     const streets = ['Mack', 'E Vernor', 'Kercheval', 'Jefferson'];
     const cross = ['Rohns', 'Holcomb', 'Belvidere', 'McClellan', 'Pennsylvania', 'Cadillac'];
@@ -158,8 +159,14 @@
           const block = document.createElement('div');
           block.className = 'block';
           block.dataset.id = id;
-          grid.appendChild(block);
+
+          if (claimed[id]) {
+            block.classList.add('claimed');
+            block.dataset.claimer = claimed[id].name;
+          }
+
           block.onclick = () => openForm(id, block);
+          grid.appendChild(block);
         }
       }
 
@@ -181,6 +188,12 @@
       overlay.style.display = 'block';
     }
 
+    function closeForm() {
+      modal.style.display = 'none';
+      overlay.style.display = 'none';
+      selectedBlock = null;
+    }
+
     claimForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const name = document.getElementById('name').value;
@@ -189,18 +202,18 @@
 
       const id = selectedBlock.dataset.id;
       claimed[id] = { name, email, day };
+      localStorage.setItem('claimedBlocks', JSON.stringify(claimed));
+
       selectedBlock.classList.add('claimed');
       selectedBlock.dataset.claimer = name;
 
       fetch('https://script.google.com/macros/s/AKfycbxosLf3fOqvNeBCLebLQMH_fO8vnHn-HFvhPxC3nJ0DgsQ_bSP2DsozEMHFLhCsEZbM2Q/exec', {
-  method: 'POST',
-  mode: 'no-cors', // <-- ADD THIS LINE
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ name, email, day, blockId: id })
-})
-.then(() => {
-        modal.style.display = 'none';
-        overlay.style.display = 'none';
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, day, blockId: id })
+      }).then(() => {
+        closeForm();
         claimForm.reset();
         alert(`Block ${id} claimed by ${name} with reminders on ${day}`);
       }).catch(err => {
