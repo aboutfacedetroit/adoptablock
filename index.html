@@ -192,10 +192,12 @@
       selectedBlock.dataset.claimer = name;
 
       fetch('https://script.google.com/macros/s/AKfycbxosLf3fOqvNeBCLebLQMH_fO8vnHn-HFvhPxC3nJ0DgsQ_bSP2DsozEMHFLhCsEZbM2Q/exec', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, day, blockId: id })
-      }).then(() => {
+  method: 'POST',
+  mode: 'no-cors', // <-- ADD THIS LINE
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ name, email, day, blockId: id })
+})
+.then(() => {
         modal.style.display = 'none';
         overlay.style.display = 'none';
         claimForm.reset();
