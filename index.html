@@ -134,6 +134,7 @@
       </label><br><br>
       <button type="submit">Submit</button>
     </form>
+    <button onclick="unclaimBlock()" style="margin-top: 10px; background: #f66; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Unclaim this block</button>
   </div>
 
   <script>
@@ -181,7 +182,6 @@
     }
 
     function openForm(id, el) {
-      if (claimed[id]) return;
       selectedBlock = el;
       document.getElementById('blockId').textContent = id;
       modal.style.display = 'block';
@@ -192,6 +192,16 @@
       modal.style.display = 'none';
       overlay.style.display = 'none';
       selectedBlock = null;
+    }
+
+    function unclaimBlock() {
+      if (!selectedBlock) return;
+      const id = selectedBlock.dataset.id;
+      delete claimed[id];
+      localStorage.setItem('claimedBlocks', JSON.stringify(claimed));
+      selectedBlock.classList.remove('claimed');
+      delete selectedBlock.dataset.claimer;
+      closeForm();
     }
 
     claimForm.addEventListener('submit', (e) => {
