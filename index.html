@@ -17,16 +17,15 @@
     }
     .grid {
       display: grid;
-      grid-template-columns: 100px repeat(6, minmax(60px, 1fr));
+      grid-template-columns: 100px repeat(6, 80px);
       grid-template-rows: repeat(4, 60px);
       gap: 10px;
       justify-content: center;
       align-items: center;
       margin: 40px auto;
-      overflow-x: auto;
     }
     .block {
-      width: 100%;
+      width: 80px;
       height: 60px;
       background: #444;
       border: 2px solid #ccc;
@@ -75,7 +74,6 @@
       border-radius: 6px;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
       z-index: 1000;
-      max-width: 90vw;
     }
     #overlay {
       display: none;
@@ -167,14 +165,8 @@
 
       const id = selectedBlock.dataset.id;
       claimed[id] = { name, email, day };
-      selectedBlock.classList.add('claimed');
 
-      fetch('https://script.google.com/macros/s/AKfycbxosLf3fOqvNeBCLebLQMH_fO8vnHn-HFvhPxC3nJ0DgsQ_bSP2DsozEMHFLhCsEZbM2Q/exec', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, day, blockId: id })
-      });
+      selectedBlock.classList.add('claimed');
 
       modal.style.display = 'none';
       overlay.style.display = 'none';
