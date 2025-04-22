@@ -53,18 +53,19 @@
       background-color: #fff5;
     }
     .block:hover::after {
-      content: attr(data-claimer);
-      position: absolute;
-      bottom: -22px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 11px;
-      background: #fff7c0;
-      padding: 2px 6px;
-      border: 1px solid #aaa;
-      border-radius: 3px;
-      white-space: nowrap;
-    }
+  content: attr(data-claimer);
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  background: #fff7c0;
+  padding: 2px 6px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  white-space: nowrap;
+  z-index: 9999;
+}
     .label-row {
       font-size: 12px;
       font-weight: bold;
