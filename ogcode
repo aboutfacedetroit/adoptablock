@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adopt-a-Block Grid</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f9f9f9;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 100px repeat(6, 80px);
+      grid-template-rows: repeat(4, 60px);
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      margin: 40px auto;
+    }
+    .block {
+      width: 80px;
+      height: 60px;
+      background: #444;
+      border: 2px solid #ccc;
+      position: relative;
+      cursor: pointer;
+    }
+    .block::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 0;
+      border-top: 4px dashed #fff;
+      transform: translateY(-50%);
+    }
+    .label-row {
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .label-col {
+      font-size: 10px;
+      font-weight: bold;
+      color: #000;
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-45deg);
+      background: #fef5d4;
+      padding: 2px 6px;
+      border: 1px dashed #aaa;
+      border-radius: 4px;
+    }
+    .claimed {
+      background: #ccc;
+      border: 2px solid red;
+    }
+    #formModal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
+    #overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.4);
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+  <h1>Adopt-a-Block: Litter Clean Up Grid</h1>
+  <div class="grid" id="grid"></div>
+
+  <div id="overlay"></div>
+  <div id="formModal">
+    <h3>Claim Block <span id="blockId"></span></h3>
+    <form id="claimForm">
+      <input type="text" id="name" placeholder="Your name" required><br><br>
+      <input type="email" id="email" placeholder="Your email" required><br><br>
+      <label>Reminder Day:
+        <select id="day">
+          <option>Monday</option>
+          <option>Tuesday</option>
+          <option>Wednesday</option>
+          <option>Thursday</option>
+          <option>Friday</option>
+          <option>Saturday</option>
+          <option>Sunday</option>
+        </select>
+      </label><br><br>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const modal = document.getElementById('formModal');
+    const overlay = document.getElementById('overlay');
+    const claimForm = document.getElementById('claimForm');
+    let selectedBlock = null;
+    const claimed = {};
+
+    const streets = ['Mack', 'E Vernor', 'Kercheval', 'Jefferson'];
+    const cross = ['Rohns', 'Holcomb', 'Belvidere', 'McClellan', 'Pennsylvania', 'Cadillac'];
+
+    function buildGrid() {
+      for (let row = 0; row < streets.length; row++) {
+        const rowLabel = document.createElement('div');
+        rowLabel.className = 'label-row';
+        rowLabel.textContent = streets[row];
+        grid.appendChild(rowLabel);
+
+        for (let col = 0; col < cross.length; col++) {
+          const id = `${streets[row]}-${cross[col]}`;
+          const block = document.createElement('div');
+          block.className = 'block';
+          block.dataset.id = id;
+          block.onclick = () => openForm(id, block);
+
+          if (row === streets.length - 1) {
+            const label = document.createElement('div');
+            label.className = 'label-col';
+            label.textContent = cross[col];
+            block.appendChild(label);
+          }
+
+          grid.appendChild(block);
+        }
+      }
+    }
+
+    function openForm(id, el) {
+      if (claimed[id]) return;
+      selectedBlock = el;
+      document.getElementById('blockId').textContent = id;
+      modal.style.display = 'block';
+      overlay.style.display = 'block';
+    }
+
+    claimForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const day = document.getElementById('day').value;
+
+      const id = selectedBlock.dataset.id;
+      claimed[id] = { name, email, day };
+
+      selectedBlock.classList.add('claimed');
+
+      modal.style.display = 'none';
+      overlay.style.display = 'none';
+      claimForm.reset();
+
+      alert(`Block ${id} claimed by ${name} with reminders on ${day}`);
+    });
+
+    buildGrid();
+  </script>
+</body>
+</html>
