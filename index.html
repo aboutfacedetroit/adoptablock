@@ -191,7 +191,7 @@
       selectedBlock.classList.add('claimed');
       selectedBlock.dataset.claimer = name;
 
-      fetch('https://script.google.com/macros/library/d/1MDrr--Q-a-uTBOTU-z_2C9H6z1LZc_urB2kr9T62ea6Rqf4OlztO6zso/1', {
+      fetch('https://script.google.com/macros/s/AKfycbxosLf3fOqvNeBCLebLQMH_fO8vnHn-HFvhPxC3nJ0DgsQ_bSP2DsozEMHFLhCsEZbM2Q/exec', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, day, blockId: id })
