@@ -119,7 +119,7 @@ claimForm.addEventListener('submit', async (e) => {
 
   try {
     const response = await fetch('https://script.google.com/macros/s/AKfycbxPfVHC-JeLrTxTDoxkj5rXmq2XpR9aCSQS36ZRdLva4sHbrxapsfrDXMxeD57OOx1c/exec', {
-      method: 'POST',
+       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, day, blockId: id })
     });
