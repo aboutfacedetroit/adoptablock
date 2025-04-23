@@ -209,12 +209,6 @@
      status: 'unclaimed'
    };
   
-   const formData = new FormData();
-   formData.append("name", claimed[id].name);
-   formData.append("email", claimed[id].email);
-   formData.append("blockId", id);
-   formData.append("status", "unclaimed");
- 
    // Update visual and local data
    delete claimed[id];
    localStorage.setItem('claimedBlocks', JSON.stringify(claimed));
