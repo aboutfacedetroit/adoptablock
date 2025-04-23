@@ -194,7 +194,6 @@
        selectedBlock = null;
      }
  
-  function unclaimBlock() {
  function unclaimBlock() {
    if (!selectedBlock) return;
    const id = selectedBlock.dataset.id;
@@ -209,6 +208,7 @@
      blockId: id,
      status: 'unclaimed'
    };
+  
    const formData = new FormData();
    formData.append("name", claimed[id].name);
    formData.append("email", claimed[id].email);
@@ -228,7 +228,6 @@
      mode: 'no-cors',
      headers: { 'Content-Type': 'application/json' },
      body: JSON.stringify(unclaimedData)
-     body: formData
    });
  }
  
