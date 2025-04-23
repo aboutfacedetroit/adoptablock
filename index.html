@@ -95,8 +95,8 @@
       const confirmUnclaim = confirm(`Are you sure you want to unclaim ${id}?`);
       if (!confirmUnclaim) return;
 
-fetch('https://script.google.com/macros/s/AAKfycbxPfVHC-JeLrTxTDoxkj5rXmq2XpR9aCSQS36ZRdLva4sHbrxapsfrDXMxeD57OOx1c/exec', {
-      delete claimed[id];
+fetch('https://script.google.com/macros/s/AKfycbxPfVHC-JeLrTxTDoxkj5rXmq2XpR9aCSQS36ZRdLva4sHbrxapsfrDXMxeD57OOx1c/exec', {
+        delete claimed[id];
       localStorage.setItem('claimedBlocks', JSON.stringify(claimed));
       selectedBlock.classList.remove('claimed');
       delete selectedBlock.dataset.claimer;
