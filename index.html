@@ -137,124 +137,123 @@
      <button onclick="unclaimBlock()" style="margin-top: 10px; background: #f66; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Unclaim this block</button>
    </div>
  
-   <script>
-     const grid = document.getElementById('grid');
-     const modal = document.getElementById('formModal');
-     const overlay = document.getElementById('overlay');
-     const claimForm = document.getElementById('claimForm');
-     let selectedBlock = null;
-     const claimed = JSON.parse(localStorage.getItem('claimedBlocks') || '{}');
- 
-     const streets = ['Mack', 'E Vernor', 'Kercheval', 'Jefferson'];
-     const cross = ['Rohns - Holcomb', 'Holcomb - Belvidere', 'Belvidere - McClellan', 'McClellan - Pennsylvania', 'Pennsylvania - Cadillac', 'Cadillac - Hurlbut'];
- 
-     function buildGrid() {
-       for (let row = 0; row < streets.length; row++) {
-         const rowLabel = document.createElement('div');
-         rowLabel.className = 'label-row';
-         rowLabel.textContent = streets[row];
-         grid.appendChild(rowLabel);
- 
-         for (let col = 0; col < cross.length; col++) {
-           const id = `${streets[row]}-${cross[col]}`;
-           const block = document.createElement('div');
-           block.className = 'block';
-           block.dataset.id = id;
- 
-           if (claimed[id]) {
-             block.classList.add('claimed');
-             block.dataset.claimer = claimed[id].name;
-           }
- 
-           block.onclick = () => openForm(id, block);
-           grid.appendChild(block);
-         }
-       }
- 
-       const empty = document.createElement('div');
-       grid.appendChild(empty);
-       cross.forEach(crossName => {
-         const label = document.createElement('div');
-         label.className = 'label-col';
-         label.textContent = crossName;
-         grid.appendChild(label);
-       });
-     }
- 
-     function openForm(id, el) {
-       selectedBlock = el;
-       document.getElementById('blockId').textContent = id;
-       modal.style.display = 'block';
-       overlay.style.display = 'block';
-     }
- 
-     function closeForm() {
-       modal.style.display = 'none';
-       overlay.style.display = 'none';
-       selectedBlock = null;
-     }
- 
- function unclaimBlock() {
-   if (!selectedBlock) return;
-   const id = selectedBlock.dataset.id;
-   if (!claimed[id]) return;
- 
-   const confirmUnclaim = confirm(`Are you sure you want to unclaim ${id}?`);
-   if (!confirmUnclaim) return;
- 
-   const unclaimedData = {
-     name: claimed[id].name,
-     email: claimed[id].email,
-     blockId: id,
-     status: 'unclaimed'
-   };
-  
-   // Update visual and local data
-   delete claimed[id];
-   localStorage.setItem('claimedBlocks', JSON.stringify(claimed));
-   selectedBlock.classList.remove('claimed');
-   delete selectedBlock.dataset.claimer;
-   closeForm();
- 
-   // Send to Google Apps Script
-   fetch('https://script.google.com/macros/s/AKfycbxPfVHC-JeLrTxTDoxkj5rXmq2XpR9aCSQS36ZRdLva4sHbrxapsfrDXMxeD57OOx1c/exec', {
-     method: 'POST',
-     mode: 'no-cors',
-     headers: { 'Content-Type': 'application/json' },
-     body: JSON.stringify(unclaimedData)
-   });
- }
- 
-     claimForm.addEventListener('submit', (e) => {
-       e.preventDefault();
-       const name = document.getElementById('name').value;
-       const email = document.getElementById('email').value;
-       const day = document.getElementById('day').value;
- 
-       const id = selectedBlock.dataset.id;
-       claimed[id] = { name, email, day };
-       localStorage.setItem('claimedBlocks', JSON.stringify(claimed));
- 
-       selectedBlock.classList.add('claimed');
-       selectedBlock.dataset.claimer = name;
+<script>
+  const grid = document.getElementById('grid');
+  const modal = document.getElementById('formModal');
+  const overlay = document.getElementById('overlay');
+  const claimForm = document.getElementById('claimForm');
+  let selectedBlock = null;
+  const claimed = JSON.parse(localStorage.getItem('claimedBlocks') || '{}');
 
-       fetch('https://script.google.com/macros/s/AKfycbxPfVHC-JeLrTxTDoxkj5rXmq2XpR9aCSQS36ZRdLva4sHbrxapsfrDXMxeD57OOx1c/exec', {
-         method: 'POST',
-         mode: 'no-cors',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify({ name, email, day, blockId: id })
-       }).then(() => {
-         closeForm();
-         claimForm.reset();
-         alert(`Block ${id} claimed by ${name} with reminders on ${day}`);
-       }).catch(err => {
-         console.error('Submission failed', err);
-         alert('There was an error submitting your claim. Please try again later.');
-       });
-     });
- 
-     buildGrid();
-   </script>
+  const streets = ['Mack', 'E Vernor', 'Kercheval', 'Jefferson'];
+  const cross = ['Rohns - Holcomb', 'Holcomb - Belvidere', 'Belvidere - McClellan', 'McClellan - Pennsylvania', 'Pennsylvania - Cadillac', 'Cadillac - Hurlbut'];
+
+  function buildGrid() {
+    for (let row = 0; row < streets.length; row++) {
+      const rowLabel = document.createElement('div');
+      rowLabel.className = 'label-row';
+      rowLabel.textContent = streets[row];
+      grid.appendChild(rowLabel);
+
+      for (let col = 0; col < cross.length; col++) {
+        const id = `${streets[row]}-${cross[col]}`;
+        const block = document.createElement('div');
+        block.className = 'block';
+        block.dataset.id = id;
+
+        if (claimed[id]) {
+          block.classList.add('claimed');
+          block.dataset.claimer = claimed[id].name;
+        }
+
+        block.onclick = () => openForm(id, block);
+        grid.appendChild(block);
+      }
+    }
+
+    grid.appendChild(document.createElement('div'));
+    cross.forEach(crossName => {
+      const label = document.createElement('div');
+      label.className = 'label-col';
+      label.textContent = crossName;
+      grid.appendChild(label);
+    });
+  }
+
+  function openForm(id, el) {
+    selectedBlock = el;
+    document.getElementById('blockId').textContent = id;
+    modal.style.display = 'block';
+    overlay.style.display = 'block';
+  }
+
+  function closeForm() {
+    modal.style.display = 'none';
+    overlay.style.display = 'none';
+    selectedBlock = null;
+  }
+
+  function unclaimBlock() {
+    if (!selectedBlock) return;
+    const id = selectedBlock.dataset.id;
+    if (!claimed[id]) return;
+
+    const confirmUnclaim = confirm(`Are you sure you want to unclaim ${id}?`);
+    if (!confirmUnclaim) return;
+
+    const url = new URL('https://script.google.com/macros/s/AKfycbxPfVHC-JeLrTxTDoxkj5rXmq2XpR9aCSQS36ZRdLva4sHbrxapsfrDXMxeD57OOx1c/exec');
+    url.searchParams.append("name", claimed[id].name);
+    url.searchParams.append("email", claimed[id].email);
+    url.searchParams.append("blockId", id);
+    url.searchParams.append("status", "unclaimed");
+
+    fetch(url)
+      .then(() => {
+        delete claimed[id];
+        localStorage.setItem('claimedBlocks', JSON.stringify(claimed));
+        selectedBlock.classList.remove('claimed');
+        delete selectedBlock.dataset.claimer;
+        closeForm();
+      })
+      .catch(err => {
+        console.error("Unclaim failed:", err);
+        alert("There was a problem unclaiming this block.");
+      });
+  }
+
+  claimForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const day = document.getElementById('day').value;
+    const id = selectedBlock.dataset.id;
+
+    claimed[id] = { name, email, day };
+    localStorage.setItem('claimedBlocks', JSON.stringify(claimed));
+    selectedBlock.classList.add('claimed');
+    selectedBlock.dataset.claimer = name;
+
+    const url = new URL('https://script.google.com/macros/s/AKfycbxPfVHC-JeLrTxTDoxkj5rXmq2XpR9aCSQS36ZRdLva4sHbrxapsfrDXMxeD57OOx1c/exec');
+    url.searchParams.append("name", name);
+    url.searchParams.append("email", email);
+    url.searchParams.append("day", day);
+    url.searchParams.append("blockId", id);
+    url.searchParams.append("status", "claimed");
+
+    fetch(url)
+      .then(() => {
+        alert(`Block ${id} claimed by ${name} with reminders on ${day}`);
+        closeForm();
+        claimForm.reset();
+      })
+      .catch((err) => {
+        console.error("Claim failed:", err);
+        alert("There was a problem claiming this block.");
+      });
+  });
+
+  buildGrid();
+</script>
  </body>
  </html>
 
