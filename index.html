@@ -193,34 +193,6 @@
     selectedBlock = null;
   }
 
-  function unclaimBlock() {
-    if (!selectedBlock) return;
-    const id = selectedBlock.dataset.id;
-    if (!claimed[id]) return;
-
-    const confirmUnclaim = confirm(`Are you sure you want to unclaim ${id}?`);
-    if (!confirmUnclaim) return;
-
-    const url = new URL('https://script.google.com/macros/s/AKfycbxPfVHC-JeLrTxTDoxkj5rXmq2XpR9aCSQS36ZRdLva4sHbrxapsfrDXMxeD57OOx1c/exec');
-    url.searchParams.append("name", claimed[id].name);
-    url.searchParams.append("email", claimed[id].email);
-    url.searchParams.append("blockId", id);
-    url.searchParams.append("status", "unclaimed");
-
-    fetch(url)
-      .then(() => {
-        delete claimed[id];
-        localStorage.setItem('claimedBlocks', JSON.stringify(claimed));
-        selectedBlock.classList.remove('claimed');
-        delete selectedBlock.dataset.claimer;
-        closeForm();
-      })
-      .catch(err => {
-        console.error("Unclaim failed:", err);
-        alert("There was a problem unclaiming this block.");
-      });
-  }
-
  claimForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const name = document.getElementById('name').value;
@@ -252,6 +224,33 @@
     });
 });
 
+  function unclaimBlock() {
+    if (!selectedBlock) return;
+    const id = selectedBlock.dataset.id;
+    if (!claimed[id]) return;
+
+    const confirmUnclaim = confirm(`Are you sure you want to unclaim ${id}?`);
+    if (!confirmUnclaim) return;
+
+    const url = new URL('https://script.google.com/macros/s/AKfycbxPfVHC-JeLrTxTDoxkj5rXmq2XpR9aCSQS36ZRdLva4sHbrxapsfrDXMxeD57OOx1c/exec');
+    url.searchParams.append("name", claimed[id].name);
+    url.searchParams.append("email", claimed[id].email);
+    url.searchParams.append("blockId", id);
+    url.searchParams.append("status", "unclaimed");
+
+    fetch(url)
+      .then(() => {
+        delete claimed[id];
+        localStorage.setItem('claimedBlocks', JSON.stringify(claimed));
+        selectedBlock.classList.remove('claimed');
+        delete selectedBlock.dataset.claimer;
+        closeForm();
+      })
+      .catch(err => {
+        console.error("Unclaim failed:", err);
+        alert("There was a problem unclaiming this block.");
+      });
+  }
 
   buildGrid();
 </script>
