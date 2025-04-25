@@ -221,36 +221,37 @@
       });
   }
 
-  claimForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const day = document.getElementById('day').value;
-    const id = selectedBlock.dataset.id;
+ claimForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const day = document.getElementById('day').value;
+  const id = selectedBlock.dataset.id;
 
-    claimed[id] = { name, email, day };
-    localStorage.setItem('claimedBlocks', JSON.stringify(claimed));
-    selectedBlock.classList.add('claimed');
-    selectedBlock.dataset.claimer = name;
+  claimed[id] = { name, email, day };
+  localStorage.setItem('claimedBlocks', JSON.stringify(claimed));
+  selectedBlock.classList.add('claimed');
+  selectedBlock.dataset.claimer = name;
 
-    const url = new URL('https://script.google.com/macros/s/AKfycbxPfVHC-JeLrTxTDoxkj5rXmq2XpR9aCSQS36ZRdLva4sHbrxapsfrDXMxeD57OOx1c/exec');
-    url.searchParams.append("name", name);
-    url.searchParams.append("email", email);
-    url.searchParams.append("day", day);
-    url.searchParams.append("blockId", id);
-    url.searchParams.append("status", "claimed");
+  const url = new URL('https://script.google.com/macros/s/AKfycbxPfVHC-JeLrTxTDoxkj5rXmq2XpR9aCSQS36ZRdLva4sHbrxapsfrDXMxeD57OOx1c/exec');
+  url.searchParams.append("name", name);
+  url.searchParams.append("email", email);
+  url.searchParams.append("day", day);
+  url.searchParams.append("blockId", id);
+  url.searchParams.append("status", "claimed");
 
-    fetch(url)
-      .then(() => {
-        alert(`Block ${id} claimed by ${name} with reminders on ${day}`);
-        closeForm();
-        claimForm.reset();
-      })
-      .catch((err) => {
-        console.error("Claim failed:", err);
-        alert("There was a problem claiming this block.");
-      });
-  });
+  fetch(url)
+    .then(() => {
+      alert(`Block ${id} claimed by ${name} with reminders on ${day}`);
+      closeForm();
+      claimForm.reset();
+    })
+    .catch((err) => {
+      console.error("Claim failed:", err);
+      alert("There was a problem claiming this block.");
+    });
+});
+
 
   buildGrid();
 </script>
